@@ -43,7 +43,33 @@ void loop() {
 			break;
 			
 		case LINE_FOLLOW_STATE:
-			//follow line here
+			      if (index == -1) {
+               
+                angle = lastAngle;
+              
+            }else {
+                // we see the line
+                angle = index * 2;
+                if (amountSeen == 2) {
+                    ++angle;
+                }
+                if(amountSeen == -1){
+                 digitalWrite(LEDR, HIGH);   
+                }
+                else{
+                  digitalWrite(LEDR, LOW);
+                }
+                if(amountSeen == 1){
+                 digitalWrite(LEDG, HIGH);   
+                }
+                else{
+                 digitalWrite(LEDG, LOW); 
+                }
+                
+                // set angle based on array
+                angle = NOSE_CENTER - SENSOR_ANGLES[angle];
+                lastAngle = angle;
+            }
 
 			digitalWrite(LED_PIN, LOW);
 
