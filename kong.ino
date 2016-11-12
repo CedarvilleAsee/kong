@@ -4,108 +4,73 @@ Main file for ASEE 2017 two robot solution with a STM32 controller.
 please don't use 2 spaces for indentation.
 */
 
-#include "pins.h"
+//wednesday's stuff
 #include <Servo.h>
+#include <Arduino.h>
+
+#include "pins.h"
 #include "constants.h"
+#include "stateMachine.h"
+#include "PT6961.h"
+
+using namespace stateMachine;
 
 int state;
+static PT6961 display(DIN, CLOCK, CS);
+
+
+
 
 void setup() {
 
 	state = START_STATE;
-	
-	pinMode(BIG_B, INPUT_PULLUP);
-	pinMode(LIL_B, INPUT_PULLUP);
 
-	pinMode(PC13, OUTPUT);
-	
+  display.initDisplay();
+  
+	pinMode(SENSOR_0, INPUT);//line sensors
+  pinMode(SENSOR_1, INPUT);
+  pinMode(SENSOR_2, INPUT);
+  pinMode(SENSOR_3, INPUT);
+  pinMode(SENSOR_4, INPUT);
+  pinMode(SENSOR_5, INPUT);
+  pinMode(SENSOR_6, INPUT);
+  pinMode(SENSOR_7, INPUT);
+
+ 
+  
+	pinMode(GO_BUTTON, INPUT_PULLUP);
+
+  pinMode(MC_PWMA, OUTPUT);
+  pinMode(MC_AIN2, OUTPUT);
+  pinMode(MC_AIN1, OUTPUT);
+  
+  pinMode(MC_PWMB, OUTPUT);
+  pinMode(MC_BIN1, OUTPUT);
+  pinMode(MC_BIN2, OUTPUT);
+
+  pinMode(MC_STBY, OUTPUT);
+
+  pinMode(LED_PIN, OUTPUT);
+
+  digitalWrite(MC_AIN1, LOW);  // Go forward
+  digitalWrite(MC_AIN2, HIGH);  // Go forward
+
+  digitalWrite(MC_BIN1, HIGH);  // Go forward
+  digitalWrite(MC_BIN2, LOW); // Go forward
+
+  digitalWrite(MC_STBY, HIGH);
+
 }
 
 void loop() {
 
-	//MAIN STATE MACHINE SWITCH
-	switch (state) {
-	
-		case START_STATE:
+  int data = readData();
 
-			//set led to on
-			digitalWrite(LED_PIN, HIGH);
-			
-			//if start button is pressed, go to line following state.
+  SensorIndices indices = interpretData(data);
 
-			if(!digitalRead(BIG_B)){
-				state = LINE_FOLLOW_STATE;
-			}
+   
+  //display.sendNum(data, ((indices.amountSeen > 0)?(1):(0)));
+  display.sendDigits(0, indices.firstIndex, indices.lastIndex, indices.amountSeen ,0);
+  drive(indices);
 
-
-
-			
-			break;
-			
-		case LINE_FOLLOW_STATE:
-			      if (index == -1) {
-               
-                angle = lastAngle;
-              
-            }else {
-                // we see the line
-                angle = index * 2;
-                if (amountSeen == 2) {
-                    ++angle;
-                }
-                if(amountSeen == -1){
-                 digitalWrite(LEDR, HIGH);   
-                }
-                else{
-                  digitalWrite(LEDR, LOW);
-                }
-                if(amountSeen == 1){
-                 digitalWrite(LEDG, HIGH);   
-                }
-                else{
-                 digitalWrite(LEDG, LOW); 
-                }
-                
-                // set angle based on array
-                angle = NOSE_CENTER - SENSOR_ANGLES[angle];
-                lastAngle = angle;
-            }
-
-			digitalWrite(LED_PIN, LOW);
-
-			if(!digitalRead(LIL_B)){
-				state = START_STATE;
-			}
-		
-			//drive forward for like a bit
-
-			//tell left motor to drive forward
-			pinMode(WHEEL_DIR_L_F, OUTPUT);
-			pinMode(WHEEL_DIR_L_B, OUTPUT);
-			digitalWrite(WHEEL_L_F, HIGH);
-			digitalWrite(WHEEL_L_B, LOW);
-
-			//tell right motor to drive forward
-			pinMode(WHEEL_DIR_R_F, OUTPUT);
-			pinMode(WHEEL_DIR_R_B, OUTPUT);
-			digitalWrite(WHEEL_R_F, HIGH);
-			digitalWrite(WHEEL_R_B, LOW);
-
-
-			//move lumberjack servo up
-
-
-
-
-
-			break;
-	
-		case TEST_STATE:
-			//do testing stuff here
-			
-
-			
-			break;
-			
-	}
 }

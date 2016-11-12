@@ -1,5 +1,6 @@
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+
+#ifndef PINS_H
+#define PINS_H
 
 /**
  * MOTOR CONTROLLER PINS
@@ -21,7 +22,7 @@
 
 /* LEFT MOTOR */
 #define MC_BIN1       PB15
-#define MC_BIN2       PA8
+#define MC_BIN2       PA11
 #define MC_PWMB       PA10
 
 /**
@@ -49,7 +50,16 @@
  #define SENSOR_6     PB10
  #define SENSOR_7     PA1
 
+//7 segment pins
+#define  CS           PA3
+#define CLOCK         PA8
+#define DIN           PB11
+
+
+
+
  #define S_LED_ON     PA0
+ #define LED_PIN      PC13
 
 #endif
 
