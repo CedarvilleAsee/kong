@@ -28,9 +28,9 @@
 /**
  * SERVO PINS
  */
-#define DUMP_SERVO    PB5
-#define SCOOP_SERVO   PB6
+#define DUMP_SERVO    PB8
 #define CLOBBER_SERVO PB7
+#define SCOOP_SERVO PB6
 
 /**
  *   BUTTONS
@@ -48,14 +48,14 @@
  #define SENSOR_4     PB0
  #define SENSOR_5     PB1
  #define SENSOR_6     PB10
- #define SENSOR_7     PA1
+ #define SENSOR_7     PA2
 
 //7 segment pins
 #define  CS           PA3
 #define CLOCK         PA8
 #define DIN           PB11
 
-
+#define WALL_SENSOR1   PA1
 
 
  #define S_LED_ON     PA0

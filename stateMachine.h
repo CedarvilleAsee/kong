@@ -1,6 +1,10 @@
+#include <Servo.h>
+
 
 #ifndef STATE_MACHINE
 #define STATE_MACHINE
+
+
 
 namespace stateMachine{
   
@@ -13,9 +17,14 @@ namespace stateMachine{
     int lastIndex;
     int amountSeen;
   };
+
+  /**
+   * Attaches the Servos for output.
+   */
+  void initServos();
   
   //gets data and sends ouput to wheels
-  void drive(const SensorIndices& data);
+  void drive(const stateMachine::SensorIndices& data, Servo dump, Servo scoop, Servo clobber);
 
   //outputs values to wheels 
    void writeToWheels( int leftSpeed, int rightSpeed );
@@ -31,6 +40,8 @@ namespace stateMachine{
   int readData();
 
   
+  void ejectBarrel(Servo clobber);
+
   
   // interprets data that was read from the line sensors.
   // Specifically returns the first index, last index, and amount seen.

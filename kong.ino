@@ -18,12 +18,13 @@ using namespace stateMachine;
 int state;
 static PT6961 display(DIN, CLOCK, CS);
 
-
-
+Servo dump;
+Servo clobber;
+Servo scoop;
 
 void setup() {
 
-	state = START_STATE;
+	state = LINE_FOLLOW;
 
   display.initDisplay();
   
@@ -36,7 +37,7 @@ void setup() {
   pinMode(SENSOR_6, INPUT);
   pinMode(SENSOR_7, INPUT);
 
- 
+ // pinMode(WALL_SENSOR1, INPUT);
   
 	pinMode(GO_BUTTON, INPUT_PULLUP);
 
@@ -52,6 +53,13 @@ void setup() {
 
   pinMode(LED_PIN, OUTPUT);
 
+  dump.attach(DUMP_SERVO);
+  clobber.attach(CLOBBER_SERVO);
+
+  clobber.write(CLOBBER_START_POSITION);
+  
+  scoop.attach(SCOOP_SERVO);
+
   digitalWrite(MC_AIN1, LOW);  // Go forward
   digitalWrite(MC_AIN2, HIGH);  // Go forward
 
@@ -60,6 +68,7 @@ void setup() {
 
   digitalWrite(MC_STBY, HIGH);
 
+
 }
 
 void loop() {
@@ -67,10 +76,13 @@ void loop() {
   int data = readData();
 
   SensorIndices indices = interpretData(data);
-
    
-  //display.sendNum(data, ((indices.amountSeen > 0)?(1):(0)));
-  display.sendDigits(0, indices.firstIndex, indices.lastIndex, indices.amountSeen ,0);
-  drive(indices);
-
+  display.sendNum(data, ((indices.amountSeen > 0)?(1):(0)));
+  int wallSensorData = analogRead(WALL_SENSOR1);
+  
+  
+  delay(50);
+  //drive(indices, dump, scoop, clobber);
+  
+ 
 }

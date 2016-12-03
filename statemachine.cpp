@@ -52,7 +52,7 @@ extern int currentState;
   }
 */
 
-  void stateMachine::drive(const stateMachine::SensorIndices& data){
+  void stateMachine::drive(const stateMachine::SensorIndices& data, Servo dump, Servo scoop, Servo clobber){
 
     int rightWheelOut = 0;
     int leftWheelOut  = 0;
@@ -68,22 +68,22 @@ extern int currentState;
 
         if(data.amountSeen > 0) {
 
-            if(data.firstIndex < 4 && data.amountSeen > 3)
+            if(data.firstIndex < 4 && data.amountSeen > 3)//right turn 90 degree
             {
-              leftWheelOut = FULL_SPEED + 50;
+              leftWheelOut = FULL_SPEED;
             }
-            else if(data.lastIndex > 2 && data.amountSeen > 3)
-            {
-              rightWheelOut = FULL_SPEED + 50;
-            }
-            else if(data.firstIndex > 3)
+            else if(data.lastIndex > 2 && data.amountSeen > 3)//left turn 90 degree
             {
               rightWheelOut = FULL_SPEED;
-              leftWheelOut  = TURN_SPEEDS[data.firstIndex % 3];
+            }
+            else if(data.firstIndex > 4)
+            {
+              rightWheelOut = FULL_SPEED;
+              leftWheelOut  = TURN_SPEEDS[3 - (data.firstIndex - 5)];
             }
             else if(data.firstIndex < 3)
             {
-              rightWheelOut = TURN_SPEEDS[data.firstIndex % 3];
+              rightWheelOut = TURN_SPEEDS[data.firstIndex];
               leftWheelOut  = FULL_SPEED;
             }
             else if((data.firstIndex == 3) || (data.firstIndex == 4))
@@ -92,16 +92,23 @@ extern int currentState;
               leftWheelOut  = FULL_SPEED;
             }
         }
+
+        if(analogRead(WALL_SENSOR1) < 3000){
+          stateMachine::ejectBarrel(clobber);
+        }
         
         break; }
+
+        case LEFT_TURN1: 
+        break;
     }
 
     //Switch on current state
     //WHAT CONDITION TO MOVE TO NEXT STATE
 
-    switch(stateMap[currentState]){
-      
-    }
+//    switch(stateMap[currentState]){
+//      
+//    }
 
     writeToWheels(leftWheelOut, rightWheelOut);
     //writeToWheels(0, 0);
@@ -133,8 +140,7 @@ extern int currentState;
       lineData[4] = digitalRead(SENSOR_4);
       lineData[5] = digitalRead(SENSOR_5);
       lineData[6] = digitalRead(SENSOR_6);
-      lineData[7] = 0;
-    //cheating didn't work  lineData[7] = analogRead(SENSOR_7); // Sensor 7 is busted for sure
+      lineData[7] = digitalRead(SENSOR_7);
 
       int dataNum = 0;
       for(int i = 0; i < 8; i++){
@@ -177,10 +183,19 @@ extern int currentState;
                       kiddy way of doing it )
       */
       
-  
+      
       return indices;
   }
 
+
+
+  void stateMachine::ejectBarrel(Servo clobber){
+    
+    clobber.write(CLOBBER_BACK_POSITION);
+    delay(150);
+    clobber.write(CLOBBER_START_POSITION);
+    delay(100);
+  }
 
 
 
